@@ -1,0 +1,36 @@
+---
+/**
+ * * About section
+ */
+
+import { Image } from "astro:assets";
+import sitioConfig from "@config/sitio-config";
+---
+
+<section id="about" class="site-container scroll-mt-10 py-8 md:py-12">
+	<div class="flex flex-col md:flex-row">
+		<div class="md:w-2/3">
+			<h2 class="h3 text-primary-500 text-pretty uppercase">{sitioConfig["about-heading"]}</h2>
+			<h3 class="h2 mt-4">{sitioConfig["about-name"]}</h3>
+			<div class="bg-base-100 mt-8 p-8 md:mb-20 lg:text-lg">
+				<p>
+					{sitioConfig["about-description"]}
+				</p>
+				<div class="flex w-3/4 justify-end">
+					<p class="font-heading-1 text-3xl italic">{sitioConfig["about-signature"]}</p>
+				</div>
+			</div>
+		</div>
+		<div class="mr-auto max-w-md md:w-1/3 md:max-w-none">
+			<div class="my-auto aspect-[3/4] w-full overflow-hidden">
+				<Image
+					src={sitioConfig["about-image"]}
+					alt={sitioConfig["about-image-alt"]}
+					width={450}
+					densities={[1.5, 2]}
+					class="h-auto min-h-full w-full min-w-full object-cover"
+				/>
+			</div>
+		</div>
+	</div>
+</section>

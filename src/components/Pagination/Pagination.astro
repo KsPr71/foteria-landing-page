@@ -1,0 +1,49 @@
+---
+import Button from "@components/Button/Button.astro";
+import sitioConfig from "@config/sitio-config";
+
+interface Props {
+	prevUrl: string | undefined;
+	currPage: number;
+	nextUrl: string | undefined;
+	lastPage: number;
+}
+
+const { prevUrl, currPage, nextUrl, lastPage } = Astro.props as Props;
+---
+
+{
+	(prevUrl || nextUrl) && (
+		<nav aria-label={sitioConfig["pagination-aria-label"]} class="w-full">
+			<div class="text-center">
+				<div class="btn-group flex w-full justify-between py-3 md:py-4">
+					{prevUrl && (
+						<Button variant="outline" arrow="left" href={prevUrl}>
+							{sitioConfig["pagination-previous-label"]}
+						</Button>
+					)}
+					{!prevUrl && (
+						<Button variant="outline" arrow="left" href={prevUrl} class="opacity-50" disabled>
+							{sitioConfig["pagination-previous-label"]}
+						</Button>
+					)}
+
+					<Button variant="primary" href="" disabled>
+						{currPage.toString()}
+					</Button>
+					{nextUrl && (
+						<Button variant="outline" arrow="right" href={nextUrl}>
+							{sitioConfig["pagination-next-label"]}
+						</Button>
+					)}
+
+					{!nextUrl && (
+						<Button variant="outline" arrow="right" href={nextUrl} class="opacity-50" disabled>
+							{sitioConfig["pagination-next-label"]}
+						</Button>
+					)}
+				</div>
+			</div>
+		</nav>
+	)
+}
