@@ -1,54 +1,26 @@
 ---
-/**
- * * These are small cards that are used in the portfolio section
- */
 import Button from "@components/Button/Button.astro";
 import { Image } from "astro:assets";
 import type { CollectionEntry } from "astro:content";
 import sitioConfig from "@config/sitio-config";
+import type { StoragePortfolio } from "@/lib/storage-portfolios";
 
 interface Props {
-	portfolio: CollectionEntry<"portfolios">;
+	portfolio: CollectionEntry<"portfolios"> | StoragePortfolio;
 	direction: "horizontal" | "vertical";
 	noTransitions?: boolean;
 }
 
-const { portfolio, direction, noTransitions = false } = Astro.props as Props;
-const { title, description, heroImage } = portfolio.data;
+const { portfolio, direction } = Astro.props as Props;
+const isStoragePortfolio = "slug" in portfolio;
+const { title, description, heroImage, coverImage, coverPosition, slug } = isStoragePortfolio
+	? { ...portfolio, coverImage: portfolio.coverImage, coverPosition: portfolio.coverPosition }
+	: { ...portfolio.data, slug: portfolio.id };
 ---
 
-<div
-	class:list={[
-		"grid gap-4",
-		{
-			"md:grid-cols-2": direction === "horizontal",
-		},
-	]}
->
-	<a href={`/portfolio/${portfolio.id}`} class="aspect-square overflow-hidden">
-		{
-			noTransitions && (
-				<Image
-					src={heroImage}
-					alt={title}
-					width={450}
-					densities={[1.5, 2, 3]}
-					class="h-auto min-h-full w-full min-w-full object-cover"
-				/>
-			)
-		}
-		{
-			!noTransitions && (
-				<Image
-					src={heroImage}
-					alt={title}
-					width={450}
-					densities={[1.5, 2, 3]}
-					class="h-auto min-h-full w-full min-w-full object-cover"
-					transition:name={`portfolio-image-${portfolio.id}`}
-				/>
-			)
-		}
+<div class:list={["grid gap-4", { "md:grid-cols-2": direction === "horizontal" }]}>
+	<a href={`/portfolio/${slug}`} class="aspect-square overflow-hidden">
+		{isStoragePortfolio ? <img src={coverImage} alt={title} style={`object-position: ${coverPosition};`} class="h-auto min-h-full w-full min-w-full object-cover" loading="lazy" /> : <Image src={heroImage} alt={title} width={450} densities={[1.5, 2, 3]} class="h-auto min-h-full w-full min-w-full object-cover" />}
 	</a>
 	<div class="flex flex-col justify-between gap-2">
 		<div>
@@ -56,9 +28,7 @@ const { title, description, heroImage } = portfolio.data;
 			<p class="mt-4 lg:text-lg">{description}</p>
 		</div>
 		<div class="flex">
-			<Button variant="ghost" arrow="right" href={`/portfolio/${portfolio.id}`} class="pl-0">
-				{sitioConfig["portfolio-view-more-label"]}
-			</Button>
+			<Button variant="ghost" arrow="right" href={`/portfolio/${slug}`} class="pl-0">{sitioConfig["portfolio-view-more-label"]}</Button>
 		</div>
 	</div>
 </div>

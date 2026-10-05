@@ -1,0 +1,284 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Administrar portafolios" description="Carga de portafolios">
+	<section class="site-container max-w-3xl pt-32 pb-20">
+		<h1 class="h1">Administrar portafolios</h1>
+		<p id="status" class="mt-4 text-base-700">Inicia sesión para continuar.</p>
+		<form id="login-form" class="mt-8 grid gap-4 max-w-md">
+			<input class="form__input" type="email" name="email" placeholder="Correo" required />
+			<input class="form__input" type="password" name="password" placeholder="Contraseña" required />
+			<button class="button button--primary" type="submit">Iniciar sesión</button>
+		</form>
+		<form id="portfolio-form" class="mt-10 grid gap-4" hidden>
+			<input class="form__input" name="title" placeholder="Título" required />
+			<input class="form__input" name="slug" placeholder="slug-del-portafolio" pattern="[a-z0-9-]+" required />
+			<textarea class="form__input min-h-28" name="description" placeholder="Descripción" required></textarea>
+			<input class="form__input" type="date" name="date" required />
+			<input class="form__input" name="location" placeholder="Ubicación" required />
+			<input class="form__input" name="clients" placeholder="Clientes, separados por coma" required />
+			<input class="form__input" type="number" name="order" value="1" min="0" required />
+			<div class="grid gap-1">
+				<label class="form__label" for="portfolio-banner">Imagen de portada / banner</label>
+				<input id="portfolio-banner" class="form__input" type="file" name="banner" accept="image/*" required />
+				<p class="text-sm text-base-700">Esta imagen se usa solo como banner y no aparece en la galeria.</p>
+			</div>
+			<div class="grid gap-1">
+				<label class="form__label" for="portfolio-cover">Imagen de portada para tarjetas</label>
+				<input id="portfolio-cover" class="form__input" type="file" name="cover" accept="image/*" required />
+				<p class="text-sm text-base-700">Esta imagen se muestra en las tarjetas de la pagina principal y la galeria.</p>
+			</div>
+			<div class="grid gap-2 sm:grid-cols-2">
+				<label class="form__label">Encuadre del banner<select class="form__input" name="bannerPosition"><option value="center">Centro</option><option value="top">Arriba</option><option value="bottom">Abajo</option><option value="left">Izquierda</option><option value="right">Derecha</option></select></label>
+				<label class="form__label">Encuadre de portada<select class="form__input" name="coverPosition"><option value="center">Centro</option><option value="top">Arriba</option><option value="bottom">Abajo</option><option value="left">Izquierda</option><option value="right">Derecha</option></select></label>
+			</div>
+			<div class="grid gap-4 sm:grid-cols-2">
+				<div><p class="form__label">Vista previa del banner</p><div id="banner-preview-frame" class="image-preview image-preview--banner"><img id="banner-preview" alt="Vista previa del banner" /></div><p class="text-sm text-base-700">Arrastra la imagen para elegir el encuadre.</p></div>
+				<div><p class="form__label">Vista previa de portada</p><div id="cover-preview-frame" class="image-preview image-preview--cover"><img id="cover-preview" alt="Vista previa de portada" /></div><p class="text-sm text-base-700">Arrastra la imagen para elegir el encuadre.</p></div>
+			</div>
+			<div class="grid gap-1">
+				<label class="form__label" for="image-layout">Orden de aparicion de las imagenes</label>
+				<select id="image-layout" class="form__input" name="imageLayout" required>
+					<option value="1:1:1:1:1">1:1:1:1:1 - una imagen por fila</option>
+					<option value="1:2:2:3">1:2:2:3 - una, dos, dos y tres imagenes por fila</option>
+					<option value="2:1:3:2">2:1:3:2 - dos, una, tres y dos imagenes por fila</option>
+					<option value="3:1:2:4">3:1:2:4 - tres, una, dos y cuatro imagenes por fila</option>
+					<option value="4:2:1:3">4:2:1:3 - cuatro, dos, una y tres imagenes por fila</option>
+					<option value="1:3:4:2">1:3:4:2 - una, tres, cuatro y dos imagenes por fila</option>
+				</select>
+				<p id="image-layout-hint" class="text-sm text-base-700">Las imagenes se agrupan en el orden en que las selecciones.</p>
+			</div>
+			<input class="form__input" type="file" name="images" accept="image/*" multiple required />
+			<button id="portfolio-submit" class="button button--primary" type="submit">Subir portafolio</button>
+			<button id="cancel-edit" class="button button--outline" type="button" hidden>Cancelar edicion</button>
+			<button id="sign-out" class="button button--secondary" type="button">Cerrar sesión</button>
+		</form>
+		<section id="portfolio-list" class="mt-12" hidden>
+			<h2 class="h2">Catalogos existentes</h2>
+			<div id="portfolio-list-items" class="mt-4 grid gap-3"></div>
+		</section>
+	</section>
+</BaseLayout>
+
+<script>
+	import { createClient } from "@supabase/supabase-js";
+
+	const supabase = createClient(import.meta.env.PUBLIC_SUPABASE_URL, import.meta.env.PUBLIC_SUPABASE_ANON_KEY);
+	const status = document.querySelector<HTMLParagraphElement>("#status")!;
+	const loginForm = document.querySelector<HTMLFormElement>("#login-form")!;
+	const portfolioForm = document.querySelector<HTMLFormElement>("#portfolio-form")!;
+	const imageLayout = document.querySelector<HTMLSelectElement>("#image-layout")!;
+	const imageLayoutHint = document.querySelector<HTMLParagraphElement>("#image-layout-hint")!;
+	const portfolioList = document.querySelector<HTMLElement>("#portfolio-list")!;
+	const portfolioListItems = document.querySelector<HTMLElement>("#portfolio-list-items")!;
+	const portfolioSubmit = document.querySelector<HTMLButtonElement>("#portfolio-submit")!;
+	const cancelEdit = document.querySelector<HTMLButtonElement>("#cancel-edit")!;
+	const bannerInput = document.querySelector<HTMLInputElement>("#portfolio-banner")!;
+	const coverInput = document.querySelector<HTMLInputElement>("#portfolio-cover")!;
+	const imagesInput = document.querySelector<HTMLInputElement>('input[name="images"]')!;
+	const bannerPosition = document.querySelector<HTMLSelectElement>('select[name="bannerPosition"]')!;
+	const coverPosition = document.querySelector<HTMLSelectElement>('select[name="coverPosition"]')!;
+	const bannerPreview = document.querySelector<HTMLImageElement>("#banner-preview")!;
+	const coverPreview = document.querySelector<HTMLImageElement>("#cover-preview")!;
+	const bannerPreviewFrame = document.querySelector<HTMLElement>("#banner-preview-frame")!;
+	const coverPreviewFrame = document.querySelector<HTMLElement>("#cover-preview-frame")!;
+	let editingPortfolio: { slug: string; heroImage: string; coverImage: string; images: string[][] } | null = null;
+
+	function setStatus(message: string) { status.textContent = message; }
+	function setPreview(image: HTMLImageElement, source: string, position: string) {
+		image.src = source;
+		image.style.objectPosition = position || "center";
+	}
+	function setCustomPosition(select: HTMLSelectElement, position: string) {
+		let option = [...select.options].find((item) => item.value === position);
+		if (!option) { option = new Option("Personalizado", position); select.add(option); }
+		select.value = position;
+	}
+	function setupPreview(frame: HTMLElement, image: HTMLImageElement, select: HTMLSelectElement) {
+		let dragging = false;
+		const update = (event: PointerEvent) => {
+			const rect = frame.getBoundingClientRect();
+			const x = Math.max(0, Math.min(100, ((event.clientX - rect.left) / rect.width) * 100));
+			const y = Math.max(0, Math.min(100, ((event.clientY - rect.top) / rect.height) * 100));
+			const position = `${x.toFixed(0)}% ${y.toFixed(0)}%`;
+			setCustomPosition(select, position); image.style.objectPosition = position;
+		};
+		frame.addEventListener("pointerdown", (event) => { dragging = true; frame.setPointerCapture(event.pointerId); update(event); });
+		frame.addEventListener("pointermove", (event) => { if (dragging) update(event); });
+		frame.addEventListener("pointerup", () => { dragging = false; });
+		select.addEventListener("change", () => { image.style.objectPosition = select.value; });
+	}
+	function updateImageLayoutHint() {
+		const rows = imageLayout.value.split(":").map(Number);
+		imageLayoutHint.textContent = `El orden ${imageLayout.value} crea filas de ${rows.join(", ")} imagen${rows.length === 1 ? "" : "es"}, y se repite si subes mas imagenes.`;
+	}
+	function parsePortfolioMarkdown(markdown: string) {
+		const frontmatter = markdown.match(/^---\s*\n([\s\S]*?)\n---/);
+		if (!frontmatter) throw new Error("El catalogo no tiene metadatos validos.");
+		const data: Record<string, unknown> = {};
+		for (const line of frontmatter[1].split("\n")) {
+			const separator = line.indexOf(":");
+			if (separator === -1) continue;
+			const key = line.slice(0, separator).trim();
+			const value = line.slice(separator + 1).trim();
+			try { data[key] = JSON.parse(value); } catch { data[key] = value.replace(/^['"]|['"]$/g, ""); }
+		}
+		return data;
+	}
+	function resetEdit() {
+		editingPortfolio = null;
+		portfolioForm.reset();
+		portfolioForm.elements.namedItem("slug")?.removeAttribute("readonly");
+		bannerInput.required = true;
+		coverInput.required = true;
+		imagesInput.required = true;
+		portfolioSubmit.textContent = "Subir portafolio";
+		cancelEdit.hidden = true;
+		updateImageLayoutHint();
+	}
+	async function loadPortfolios() {
+		const { data: entries, error } = await supabase.storage.from("portfolios").list("", { limit: 100 });
+		if (error) return setStatus(error.message);
+		portfolioListItems.replaceChildren();
+		const folders = (entries ?? []).filter((entry) => entry.id === null);
+		for (const folder of folders) {
+			try {
+				const { data: urlData } = supabase.storage.from("portfolios").getPublicUrl(`${folder.name}/index.md`);
+				const response = await fetch(urlData.publicUrl);
+				if (!response.ok) continue;
+				const data = parsePortfolioMarkdown(await response.text());
+				const item = document.createElement("div");
+				item.className = "border-primary-200 flex flex-wrap items-center justify-between gap-3 border p-4";
+				const title = document.createElement("p");
+				title.textContent = String(data.title ?? folder.name);
+				const actions = document.createElement("div");
+				actions.className = "flex gap-2";
+				const edit = document.createElement("button");
+				edit.type = "button"; edit.className = "button button--outline"; edit.textContent = "Editar";
+				edit.addEventListener("click", () => {
+					portfolioForm.elements.namedItem("title")?.setAttribute("value", String(data.title ?? ""));
+					(portfolioForm.elements.namedItem("description") as HTMLTextAreaElement).value = String(data.description ?? "");
+					(portfolioForm.elements.namedItem("date") as HTMLInputElement).value = String(data.date ?? "");
+					(portfolioForm.elements.namedItem("location") as HTMLInputElement).value = String(data.location ?? "");
+					(portfolioForm.elements.namedItem("clients") as HTMLInputElement).value = Array.isArray(data.clients) ? data.clients.join(", ") : "";
+					(portfolioForm.elements.namedItem("order") as HTMLInputElement).value = String(data.order ?? 0);
+					imageLayout.value = String(data.imageLayout ?? "1:1:1:1:1");
+					(portfolioForm.elements.namedItem("slug") as HTMLInputElement).value = folder.name;
+					(portfolioForm.elements.namedItem("slug") as HTMLInputElement).readOnly = true;
+					setCustomPosition(bannerPosition, String(data.bannerPosition ?? "center"));
+					setCustomPosition(coverPosition, String(data.coverPosition ?? "center"));
+					const bannerPath = String(data.heroImage ?? "").replace(/^\.\//, "");
+					const coverPath = String(data.coverImage ?? data.heroImage ?? "").replace(/^\.\//, "");
+					setPreview(bannerPreview, supabase.storage.from("portfolios").getPublicUrl(`${folder.name}/${bannerPath}`).data.publicUrl, bannerPosition.value);
+					setPreview(coverPreview, supabase.storage.from("portfolios").getPublicUrl(`${folder.name}/${coverPath}`).data.publicUrl, coverPosition.value);
+					editingPortfolio = { slug: folder.name, heroImage: String(data.heroImage ?? ""), coverImage: String(data.coverImage ?? data.heroImage ?? ""), images: Array.isArray(data.images) ? data.images as string[][] : [] };
+					bannerInput.required = false; coverInput.required = false; imagesInput.required = false; portfolioSubmit.textContent = "Guardar cambios"; cancelEdit.hidden = false; updateImageLayoutHint(); portfolioForm.scrollIntoView({ behavior: "smooth", block: "start" });
+				});
+				const remove = document.createElement("button");
+				remove.type = "button"; remove.className = "button button--secondary"; remove.textContent = "Eliminar";
+				remove.addEventListener("click", async () => {
+					if (!window.confirm(`Eliminar el catalogo “${String(data.title ?? folder.name)}” y todas sus imagenes? Esta accion no se puede deshacer.`)) return;
+					const { data: files, error: listError } = await supabase.storage.from("portfolios").list(folder.name, { limit: 1000 });
+					if (listError) return setStatus(listError.message);
+					const paths = (files ?? []).filter((file) => file.id !== null).map((file) => `${folder.name}/${file.name}`);
+					const { error: removeError } = await supabase.storage.from("portfolios").remove(paths);
+					if (removeError) return setStatus(removeError.message);
+					if (editingPortfolio?.slug === folder.name) resetEdit();
+					setStatus("Catalogo eliminado."); await loadPortfolios();
+				});
+				actions.append(edit, remove); item.append(title, actions); portfolioListItems.append(item);
+			} catch { /* Ignore malformed files; they remain editable after re-upload. */ }
+		}
+		portfolioList.hidden = false;
+	}
+	async function refreshSession() {
+		const { data: { session } } = await supabase.auth.getSession();
+		loginForm.hidden = Boolean(session);
+		portfolioForm.hidden = !session;
+		portfolioList.hidden = !session;
+		if (session) await loadPortfolios();
+		setStatus(session ? `Sesión iniciada: ${session.user.email}` : "Inicia sesión para continuar.");
+	}
+
+	loginForm.addEventListener("submit", async (event) => {
+		event.preventDefault();
+		const form = new FormData(loginForm);
+		setStatus("Iniciando sesión...");
+		const { error } = await supabase.auth.signInWithPassword({ email: String(form.get("email")), password: String(form.get("password")) });
+		if (error) return setStatus(error.message);
+		await refreshSession();
+	});
+
+	portfolioForm.addEventListener("submit", async (event) => {
+		event.preventDefault();
+		const form = new FormData(portfolioForm);
+		const slug = String(form.get("slug")).trim();
+		const banner = form.get("banner");
+		const cover = form.get("cover");
+		const files = form.getAll("images").filter((value): value is File => value instanceof File && value.size > 0);
+		const hasNewBanner = banner instanceof File && banner.size > 0;
+		const hasNewCover = cover instanceof File && cover.size > 0;
+		if (!hasNewBanner && !editingPortfolio) return setStatus("Selecciona una imagen para el banner.");
+		if (!hasNewCover && !editingPortfolio) return setStatus("Selecciona una imagen de portada.");
+		if (!files.length && !editingPortfolio) return setStatus("Selecciona al menos una imagen.");
+		setStatus("Subiendo imágenes...");
+		let bannerFileName = editingPortfolio?.heroImage.replace(/^\.\//, "") ?? "";
+		if (hasNewBanner && banner instanceof File) {
+			const bannerExtension = banner.name.includes(".") ? `.${banner.name.split(".").pop()}` : "";
+			bannerFileName = `banner${bannerExtension.toLowerCase()}`;
+			const { error: bannerError } = await supabase.storage.from("portfolios").upload(`${slug}/${bannerFileName}`, banner, { upsert: true, contentType: banner.type });
+			if (bannerError) return setStatus(`Error al subir el banner: ${bannerError.message}`);
+		}
+		let coverFileName = editingPortfolio?.coverImage.replace(/^\.\//, "") ?? "";
+		if (hasNewCover && cover instanceof File) {
+			const coverExtension = cover.name.includes(".") ? `.${cover.name.split(".").pop()}` : "";
+			coverFileName = `cover${coverExtension.toLowerCase()}`;
+			const { error: coverError } = await supabase.storage.from("portfolios").upload(`${slug}/${coverFileName}`, cover, { upsert: true, contentType: cover.type });
+			if (coverError) return setStatus(`Error al subir la portada: ${coverError.message}`);
+		}
+		const paths: string[] = [];
+		for (const [index, file] of files.entries()) {
+			const extension = file.name.includes(".") ? `.${file.name.split(".").pop()}` : "";
+			const path = `${slug}/${String(index + 1).padStart(2, "0")}${extension.toLowerCase()}`;
+			const { error } = await supabase.storage.from("portfolios").upload(path, file, { upsert: true, contentType: file.type });
+			if (error) return setStatus(`Error al subir ${file.name}: ${error.message}`);
+			paths.push(path.split("/").at(-1)!);
+		}
+		const imageLayoutValue = String(form.get("imageLayout"));
+		const layout = imageLayoutValue.split(":").map(Number).filter((count) => Number.isInteger(count) && count > 0);
+		const imageGroups: string[][] = files.length ? [] : (editingPortfolio?.images ?? []).map((group) => group.map((path) => path.replace(/^\.\//, "")));
+		for (let cursor = 0, layoutIndex = 0; cursor < paths.length; layoutIndex += 1) {
+			const count = layout[layoutIndex % layout.length];
+			imageGroups.push(paths.slice(cursor, cursor + count));
+			cursor += count;
+		}
+		const title = String(form.get("title")).trim();
+		const description = String(form.get("description")).trim();
+		const clients = String(form.get("clients")).split(",").map((name) => name.trim()).filter(Boolean);
+		const yamlValue = (value: unknown) => JSON.stringify(value);
+		const markdown = `---\ntitle: ${yamlValue(title)}\ndescription: ${yamlValue(description)}\nheroImage: ${yamlValue(`./${bannerFileName}`)}\ncoverImage: ${yamlValue(`./${coverFileName}`)}\nbannerPosition: ${yamlValue(String(form.get("bannerPosition")))}\ncoverPosition: ${yamlValue(String(form.get("coverPosition")))}\ndate: ${yamlValue(String(form.get("date")))}\nlocation: ${yamlValue(String(form.get("location")).trim())}\nclients: ${yamlValue(clients)}\nimageLayout: ${yamlValue(imageLayoutValue)}\nimages: ${yamlValue(imageGroups.map((group) => group.map((path) => `./${path}`)))}\norder: ${Number(form.get("order"))}\n---\n\n${description}\n`;
+		const { error } = await supabase.storage.from("portfolios").upload(`${slug}/index.md`, new Blob([markdown], { type: "text/markdown" }), { upsert: true, contentType: "text/markdown" });
+		if (error) return setStatus(`Error al crear index.md: ${error.message}`);
+		resetEdit();
+		await loadPortfolios();
+		setStatus(`Portafolio “${form.get("title")}” creado correctamente.`);
+	});
+
+	cancelEdit.addEventListener("click", resetEdit);
+	document.querySelector("#sign-out")?.addEventListener("click", async () => { resetEdit(); await supabase.auth.signOut(); await refreshSession(); });
+	bannerInput.addEventListener("change", () => { const file = bannerInput.files?.[0]; if (file) setPreview(bannerPreview, URL.createObjectURL(file), bannerPosition.value); });
+	coverInput.addEventListener("change", () => { const file = coverInput.files?.[0]; if (file) setPreview(coverPreview, URL.createObjectURL(file), coverPosition.value); });
+	setupPreview(bannerPreviewFrame, bannerPreview, bannerPosition);
+	setupPreview(coverPreviewFrame, coverPreview, coverPosition);
+	imageLayout.addEventListener("change", updateImageLayoutHint);
+	updateImageLayoutHint();
+	void refreshSession();
+</script>
+
+<style>
+	.image-preview { position: relative; overflow: hidden; border: 1px solid var(--color-primary-300); background: var(--color-base-100); cursor: crosshair; touch-action: none; }
+	.image-preview--banner { aspect-ratio: 16 / 6; }
+	.image-preview--cover { aspect-ratio: 1; }
+	.image-preview img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+</style>

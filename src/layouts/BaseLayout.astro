@@ -38,6 +38,9 @@ const {
 		/>
 	</head>
 	<body id="body" class="bg-base-50 text-base-900">
+		<div id="page-loading" class="page-loading" aria-live="polite" aria-label="Cargando pagina">
+			<div class="page-loading__bar"></div>
+		</div>
 		<div class="min-h-[100lvh]">
 			<Nav startStyle={navStartStyle} />
 			<main>
@@ -47,3 +50,57 @@ const {
 		<Footer />
 	</body>
 </html>
+
+<script>
+	const loading = document.querySelector<HTMLElement>("#page-loading");
+	let loadingTimeout: number | undefined;
+
+	function showLoading() {
+		if (!loading) return;
+		window.clearTimeout(loadingTimeout);
+		loading.classList.add("is-loading");
+	}
+
+	function hideLoading() {
+		if (!loading) return;
+		loading.classList.remove("is-loading");
+	}
+
+	document.addEventListener("astro:before-preparation", showLoading);
+	document.addEventListener("astro:after-swap", () => {
+		loadingTimeout = window.setTimeout(hideLoading, 150);
+	});
+	document.addEventListener("astro:page-load", hideLoading);
+</script>
+
+<style>
+	.page-loading {
+		position: fixed;
+		inset: 0 0 auto;
+		z-index: 100;
+		height: 3px;
+		pointer-events: none;
+		opacity: 0;
+		transition: opacity 0.2s ease;
+	}
+
+	.page-loading__bar {
+		height: 100%;
+		width: 35%;
+		background: var(--color-primary-500);
+		transform: translateX(-110%);
+	}
+
+	.page-loading.is-loading {
+		opacity: 1;
+	}
+
+	.page-loading.is-loading .page-loading__bar {
+		animation: page-loading 1s ease-in-out infinite;
+	}
+
+	@keyframes page-loading {
+		from { transform: translateX(-110%); }
+		to { transform: translateX(320%); }
+	}
+</style>

@@ -12,11 +12,11 @@ import sitioConfig from "@config/sitio-config";
 	<div class="flex flex-col gap-1">
 		<label for="contact-email" class="font-heading-1 text-lg uppercase">{sitioConfig["contact-email-label"]}</label>
 		<input
-			type="email"
+			type="tel"
 			class="form__input"
 			name="email"
 			id="contact-email"
-			inputmode="email"
+			inputmode="tel"
 			placeholder=""
 			required
 		/>
@@ -39,3 +39,21 @@ import sitioConfig from "@config/sitio-config";
 		<Button variant="primary" type="submit" class="w-full px-10 md:w-fit">{sitioConfig["contact-submit-label"]}</Button>
 	</div>
 </form>
+
+<script define:vars={{ whatsappNumber: sitioConfig["contact-whatsapp-number"] }}>
+	const form = document.querySelector("#contact-form");
+
+	form?.addEventListener("submit", (event) => {
+		event.preventDefault();
+		const data = new FormData(form);
+		const message = [
+			"Hola, deseo hacer una reserva.",
+			`Nombre: ${String(data.get("name") ?? "").trim()}`,
+			`Teléfono: ${String(data.get("email") ?? "").trim()}`,
+			`Fecha deseada: ${String(data.get("date") ?? "").trim()}`,
+			`Mensaje: ${String(data.get("message") ?? "").trim()}`,
+		].join("\n");
+
+		window.location.href = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+	});
+</script>

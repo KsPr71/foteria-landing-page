@@ -1,30 +1,13 @@
 ---
-// components
 import Contact from "@components/Contact/Contact.astro";
-import PortfolioGrid from "@components/Portfolio/PortfolioGrid.astro";
 import TestimonialQuote from "@components/Testimonials/TestimonialQuote.astro";
-// layout
 import BaseLayout from "@layouts/BaseLayout.astro";
-import { getCollection, render } from "astro:content";
 import sitioConfig from "@config/sitio-config";
-
-const portfolios = await getCollection("portfolios", ({ data }) => {
-	// filter out draft pages
-	return data.draft !== true;
-});
+import { getStoragePortfolios } from "@/lib/storage-portfolios";
+const portfolios = await getStoragePortfolios();
 ---
-
 <BaseLayout title={sitioConfig["portfolio-page-title"]} description={sitioConfig["portfolio-page-description"]}>
-	<div class="site-container pt-24 md:pt-36">
-		<div class="mx-auto max-w-6xl text-center">
-			<h1 class="h2 text-pretty uppercase">
-				{sitioConfig["portfolio-title"]}
-			</h1>
-		</div>
-		<PortfolioGrid portfolios={portfolios} />
-	</div>
-
-	<TestimonialQuote />
-
-	<Contact class="mt-12" />
+	<div class="site-container pt-24 md:pt-36"><div class="mx-auto max-w-6xl text-center"><h1 class="h2 text-pretty uppercase">{sitioConfig["portfolio-title"]}</h1></div>
+		<div class="grid gap-x-4 gap-y-10 pt-8 md:grid-cols-3 md:pt-12">{portfolios.map((portfolio) => <article><a href={`/portfolio/${portfolio.slug}`} class="block aspect-square overflow-hidden"><img src={portfolio.coverImage} alt={portfolio.title} style={`object-position: ${portfolio.coverPosition};`} class="h-full w-full object-cover" /></a><h2 class="h3 text-primary-500 mt-4">{portfolio.title}</h2><p class="mt-3">{portfolio.description}</p></article>)}</div>
+	</div><TestimonialQuote /><Contact class="mt-12" />
 </BaseLayout>

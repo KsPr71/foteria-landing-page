@@ -9,6 +9,7 @@ import sitioConfig from "@config/sitio-config";
 
 interface pricingItem {
 	name: string; // plan name
+	type: string; // offer category used for filtering
 	featured?: boolean; // if true, will be highlighted or otherwise featured
 	price: number;
 	features: string[]; // list of features
@@ -20,28 +21,37 @@ const pricingData: pricingItem[] = sitioConfig["pricing-items"].map((item) => ({
 	...item,
 	features: [...item.features],
 }));
+const pricingTypes = [...new Set(pricingData.map((plan) => plan.type))];
 ---
 
 <section id="pricing" class="mx-auto max-w-6xl scroll-mt-10 px-4 py-8 md:py-12">
 	<div class="mx-auto max-w-6xl text-center">
 		<h2 class="h2 text-pretty uppercase">{sitioConfig["pricing-title"]}</h2>
 	</div>
+	{pricingTypes.length > 1 && <div class="pricing-filter-controls mt-6">
+		<button id="pricing-filter-previous" class="button button--outline pricing-filter-arrow" type="button" aria-label="Ver filtros anteriores">&larr;</button>
+		<div id="pricing-filter-carousel" class="pricing-filter-carousel" aria-label="Filtrar ofertas">
+			<button class="button button--primary pricing-filter" type="button" data-pricing-filter="all" aria-pressed="true">{sitioConfig["pricing-filter-all-label"]}</button>
+			{pricingTypes.map((type) => <button class="button button--outline pricing-filter" type="button" data-pricing-filter={type} aria-pressed="false">{type}</button>)}
+		</div>
+		<button id="pricing-filter-next" class="button button--outline pricing-filter-arrow" type="button" aria-label="Ver más filtros">&rarr;</button>
+	</div>}
 
 	<div class="relative pt-8 md:pt-12">
 		<div id="pricing-carousel" class="pricing-carousel mx-auto flex max-w-md snap-x snap-mandatory gap-6 overflow-x-auto sm:max-w-none lg:gap-12">
 			{pricingData.map((plan) => (
-				<div class="flex w-full shrink-0 snap-start flex-col sm:basis-[calc(50%-0.75rem)] lg:basis-[calc((100%-6rem)/3)]" class:list={[{ "bg-primary-200": plan.featured === true }]}>
-					<div class="aspect-[3/4] h-auto w-full overflow-hidden">
+				<div data-pricing-type={plan.type} class="pricing-card flex w-full shrink-0 snap-start flex-col sm:basis-[calc(50%-0.75rem)] lg:basis-[calc((100%-6rem)/3)]" class:list={[{ "bg-primary-200": plan.featured === true }]}>
+					<div class="aspect-[5/4] h-auto w-full overflow-hidden">
 						<Image src={plan.image} alt={plan.name} width={450} densities={[1.5, 2]} class="h-full w-full object-cover" />
 					</div>
-					<div class="border-primary-200 flex h-full flex-col justify-between border-2 border-t-0 pt-10 pb-10">
+					<div class="border-primary-200 flex h-full flex-col justify-between border-2 border-t-0 py-8">
 						<div>
 							<h3 class="h2 text-center">{plan.name}</h3>
 							<ul class="mt-4 flex flex-col gap-3 px-8">
 								{plan.features.map((feature) => <li class="leading-snug lg:text-lg lg:leading-snug">{feature}</li>)}
 							</ul>
 						</div>
-						<p class="font-decorative text-base-800 mt-6 flex justify-center text-center text-[5rem] leading-none">${plan.price}<span class="flex h-full text-[3.5rem]">+</span></p>
+						<p class="font-decorative text-base-800 mt-6 flex justify-center text-center text-[5rem] leading-none">${plan.price}<span class="flex h-full text-[3.5rem]"></span></p>
 					</div>
 				</div>
 			))}
@@ -59,7 +69,36 @@ const pricingData: pricingItem[] = sitioConfig["pricing-items"].map((item) => ({
 		const carousel = document.querySelector("#pricing-carousel") as HTMLElement | null;
 		const previous = document.querySelector("#pricing-carousel-previous") as HTMLButtonElement | null;
 		const next = document.querySelector("#pricing-carousel-next") as HTMLButtonElement | null;
-		if (!carousel || !previous || !next) return;
+		const filterCarousel = document.querySelector("#pricing-filter-carousel") as HTMLElement | null;
+		const filterPrevious = document.querySelector("#pricing-filter-previous") as HTMLButtonElement | null;
+		const filterNext = document.querySelector("#pricing-filter-next") as HTMLButtonElement | null;
+		const filters = document.querySelectorAll<HTMLButtonElement>(".pricing-filter");
+		if (!carousel) return;
+
+		const applyFilter = (type: string) => {
+			carousel.querySelectorAll<HTMLElement>(".pricing-card").forEach((card) => {
+				card.hidden = type !== "all" && card.dataset.pricingType !== type;
+			});
+			filters.forEach((filter) => {
+				const selected = filter.dataset.pricingFilter === type;
+				filter.setAttribute("aria-pressed", String(selected));
+				filter.classList.toggle("button--primary", selected);
+				filter.classList.toggle("button--outline", !selected);
+			});
+			carousel.scrollTo({ left: 0, behavior: "smooth" });
+		};
+
+		filters.forEach((filter) => {
+			filter.addEventListener("click", () => applyFilter(filter.dataset.pricingFilter || "all"));
+		});
+
+		const scrollFilters = (direction: 1 | -1) => {
+			filterCarousel?.scrollBy({ left: direction * filterCarousel.clientWidth * 0.8, behavior: "smooth" });
+		};
+		filterPrevious?.addEventListener("click", () => scrollFilters(-1));
+		filterNext?.addEventListener("click", () => scrollFilters(1));
+
+		if (!previous || !next) return;
 
 		const scroll = (direction: 1 | -1) => {
 			const firstCard = carousel.firstElementChild as HTMLElement | null;
@@ -79,4 +118,27 @@ const pricingData: pricingItem[] = sitioConfig["pricing-items"].map((item) => ({
 <style>
 	.pricing-carousel { scrollbar-width: none; }
 	.pricing-carousel::-webkit-scrollbar { display: none; }
+	.pricing-filter-controls {
+		display: grid;
+		grid-template-columns: auto minmax(0, 1fr) auto;
+		align-items: center;
+		gap: 0.5rem;
+	}
+	.pricing-filter-arrow { padding-inline: 0.8rem; }
+	.pricing-filter-carousel {
+		display: flex;
+		gap: 0.75rem;
+		overflow-x: auto;
+		padding: 0.25rem 0.5rem 0.75rem;
+		scroll-snap-type: x proximity;
+		scrollbar-width: none;
+	}
+	.pricing-filter-carousel::-webkit-scrollbar { display: none; }
+	.pricing-filter-carousel :global(.pricing-filter) {
+		flex: 0 0 auto;
+		scroll-snap-align: start;
+	}
+	@media (min-width: 768px) {
+		.pricing-filter-controls { grid-template-columns: auto minmax(0, max-content) auto; justify-content: center; }
+	}
 </style>
