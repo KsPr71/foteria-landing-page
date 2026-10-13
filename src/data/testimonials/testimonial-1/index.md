@@ -1,6 +1,6 @@
 ---
-title: JOSÉ & MELANIE
-testimonial: Jenna has a way of making us feel like the only people in the room. The photos she delivered were beyond our expectations, capturing the joy, love, and beauty of our special day in a way that we will treasure forever.
-image: ./couple-8-crop.jpg
+title: Aimy
+testimonial: Una fotografía preciosa gracias ese gran y bello estudio,las camarógrafas especialistas en su trabajo, bellos todos sus trabajos con amor y dedicación y por la atencion brindada siempre ♾️ la foteria los mejores✨❤️. bendiciones infinitas
+image: ./DSC_0391.webp
 order: 1
 ---
