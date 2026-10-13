@@ -40,18 +40,18 @@ const pricingTypes = [...new Set(pricingData.map((plan) => plan.type))];
 	<div class="relative pt-8 md:pt-12">
 		<div id="pricing-carousel" class="pricing-carousel mx-auto flex max-w-md snap-x snap-mandatory gap-6 overflow-x-auto sm:max-w-none lg:gap-12">
 			{pricingData.map((plan) => (
-				<div data-pricing-type={plan.type} class="pricing-card flex w-full shrink-0 snap-start flex-col sm:basis-[calc(50%-0.75rem)] lg:basis-[calc((100%-6rem)/3)]" class:list={[{ "bg-primary-200": plan.featured === true }]}>
+				<div data-pricing-type={plan.type} class="pricing-card flex w-full shrink-0 self-start snap-start flex-col sm:basis-[calc(50%-0.75rem)] lg:basis-[calc((100%-6rem)/3)]" class:list={[{ "bg-primary-200": plan.featured === true }]}>
 					<div class="aspect-[5/4] h-auto w-full overflow-hidden">
 						<Image src={plan.image} alt={plan.name} width={450} densities={[1.5, 2]} class="h-full w-full object-cover" />
 					</div>
-					<div class="border-primary-200 flex h-full flex-col justify-between border-2 border-t-0 py-8">
+					<div class="border-primary-200 flex flex-col justify-between border-2 border-t-0 py-4">
 						<div>
 							<h3 class="h2 text-center">{plan.name}</h3>
-							<ul class="mt-4 flex flex-col gap-3 px-8">
-								{plan.features.map((feature) => <li class="leading-snug lg:text-lg lg:leading-snug">{feature}</li>)}
+							<ul class="mt-3 flex flex-col gap-2 px-8">
+								{plan.features.map((feature) => <li class:list={["leading-snug lg:text-lg lg:leading-snug", { "w-fit rounded-full bg-primary-500 px-3 py-1 font-semibold text-base-50 shadow-sm": feature.toLowerCase().includes("descuento") }]}>{feature}</li>)}
 							</ul>
 						</div>
-						<p class="font-decorative text-base-800 mt-6 flex justify-center text-center text-[5rem] leading-none">${plan.price}<span class="flex h-full text-[3.5rem]"></span></p>
+						<p class="font-decorative text-base-800 mt-3 flex justify-center text-center text-[4rem] leading-none">${plan.price}<span class="flex h-full text-[3rem]"></span></p>
 					</div>
 				</div>
 			))}

@@ -102,6 +102,24 @@ All commands are run from the root of the project, from a terminal:
 | `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
 | `npm run astro -- --help` | Get help using the Astro CLI                     |
 
+## Deploy automático al actualizar portfolios
+
+El panel de administración invoca la Edge Function `vercel-redeploy` después de crear, editar o eliminar un portfolio. La función llama de forma privada a un Deploy Hook de Vercel.
+
+Para activarlo en producción:
+
+1. En Vercel, abre **Project Settings → Git → Deploy Hooks** y crea un hook para la rama `main`.
+2. En Supabase, abre **Edge Functions → Secrets** y crea estos secretos:
+   - `VERCEL_DEPLOY_HOOK_URL`: la URL completa del Deploy Hook de Vercel.
+   - `VERCEL_DEPLOY_ADMIN_EMAIL`: el correo de la cuenta de Supabase autorizada a gestionar portfolios.
+3. Despliega la función desde el directorio del proyecto:
+
+   ```bash
+   npx supabase functions deploy vercel-redeploy
+   ```
+
+La URL del hook no se expone al navegador. Si los secretos no están configurados, el portfolio se guarda en Supabase, pero el panel mostrará que no pudo iniciar el deploy automático.
+
 ### Want to learn more?
 
 Feel free to check out the [Astro documentation](https://docs.astro.build).

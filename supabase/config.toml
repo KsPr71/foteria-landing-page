@@ -1,0 +1,2 @@
+[functions.vercel-redeploy]
+verify_jwt = true
