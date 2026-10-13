@@ -1,36 +1,77 @@
 ---
 /**
- * * About section
+ * About section
  */
 
 import { Image } from "astro:assets";
 import sitioConfig from "@config/sitio-config";
+import photographers from "@config/photographerData";
 ---
 
 <section id="about" class="site-container scroll-mt-10 py-8 md:py-12">
-	<div class="flex flex-col md:flex-row">
-		<div class="md:w-2/3">
-			<h2 class="h3 text-primary-500 text-pretty uppercase">{sitioConfig["about-heading"]}</h2>
-			<h3 class="h2 mt-4">{sitioConfig["about-name"]}</h3>
-			<div class="bg-base-100 mt-8 p-8 md:mb-20 lg:text-lg">
-				<p>
-					{sitioConfig["about-description"]}
-				</p>
-				<div class="flex w-3/4 justify-end">
-					<p class="font-heading-1 text-3xl italic">{sitioConfig["about-signature"]}</p>
+	<h2 class="h3 text-primary-500 text-pretty uppercase">{sitioConfig["about-heading"]}</h2>
+	<div class="about-slider relative mt-4" data-about-slider>
+		{photographers.map((photographer, index) => (
+			<article class:list={["about-slide grid gap-0 md:grid-cols-3", { "is-active": index === 0 }]} data-about-slide aria-hidden={index === 0 ? "false" : "true"}>
+				<div class="md:col-span-2">
+					<h3 class="h2">{photographer.name}</h3>
+					<div class="bg-base-100 mt-8 p-8 md:mb-20 lg:text-lg">
+						<p>{photographer.description}</p>
+						<div class="flex w-3/4 justify-end">
+							<p class="font-heading-1 text-3xl italic">{photographer.signature}</p>
+						</div>
+					</div>
 				</div>
-			</div>
-		</div>
-		<div class="mr-auto max-w-md md:w-1/3 md:max-w-none">
-			<div class="my-auto aspect-[3/4] w-full overflow-hidden">
-				<Image
-					src={sitioConfig["about-image"]}
-					alt={sitioConfig["about-image-alt"]}
-					width={450}
-					densities={[1.5, 2]}
-					class="h-auto min-h-full w-full min-w-full object-cover"
-				/>
-			</div>
-		</div>
+				<div class="mr-auto max-w-md md:col-span-1 md:w-full md:max-w-none">
+					<div class="my-auto aspect-[3/4] w-full overflow-hidden">
+						<Image src={photographer.image} alt={photographer.imageAlt} width={450} densities={[1.5, 2]} class="h-auto min-h-full w-full min-w-full object-cover" />
+					</div>
+				</div>
+			</article>
+		))}
 	</div>
 </section>
+
+<script>
+	let transitionTimer: number | undefined;
+
+	function setupAboutSlider() {
+		window.clearInterval(transitionTimer);
+		const slider = document.querySelector<HTMLElement>("[data-about-slider]");
+		const slides = [...document.querySelectorAll<HTMLElement>("[data-about-slide]")];
+		if (!slider || slides.length < 2 || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+		let activeIndex = 0;
+		transitionTimer = window.setInterval(() => {
+			const nextIndex = (activeIndex + 1) % slides.length;
+			slides[activeIndex].classList.remove("is-active");
+			slides[activeIndex].setAttribute("aria-hidden", "true");
+			slides[nextIndex].classList.add("is-active");
+			slides[nextIndex].setAttribute("aria-hidden", "false");
+			activeIndex = nextIndex;
+		}, 7000);
+	}
+
+	setupAboutSlider();
+	document.addEventListener("astro:after-swap", setupAboutSlider);
+	document.addEventListener("astro:before-swap", () => window.clearInterval(transitionTimer));
+</script>
+
+<style>
+	.about-slider { display: grid; }
+	.about-slide {
+		grid-area: 1 / 1;
+		opacity: 0;
+		pointer-events: none;
+		transform: translateY(0.75rem);
+		transition: opacity 1.25s ease-in-out, transform 1.25s ease-in-out;
+	}
+	.about-slide.is-active {
+		opacity: 1;
+		pointer-events: auto;
+		transform: translateY(0);
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.about-slide { transition: none; transform: none; }
+	}
+</style>

@@ -20,7 +20,7 @@ Deno.serve(async (request) => {
 
 	const supabaseUrl = Deno.env.get("SUPABASE_URL");
 	const publishableKey = Deno.env.get("SUPABASE_ANON_KEY");
-	const deployHookUrl = Deno.env.get("VERCEL_DEPLOY_HOOK_URL");
+	const deployHookUrl = Deno.env.get("FOTERIA_VERCEL_DEPLOY_HOOK_URL") ?? Deno.env.get("VERCEL_DEPLOY_HOOK_URL");
 	const adminEmail = Deno.env.get("VERCEL_DEPLOY_ADMIN_EMAIL")?.toLowerCase();
 	if (!supabaseUrl || !publishableKey || !deployHookUrl || !adminEmail) {
 		console.error("Missing Vercel redeploy function secrets.");
@@ -35,8 +35,10 @@ Deno.serve(async (request) => {
 
 	try {
 		const response = await fetch(deployHookUrl, { method: "POST" });
+		const responseBody = await response.text();
+		console.log(JSON.stringify({ event: "vercel_deploy_hook", status: response.status, response: responseBody }));
 		if (!response.ok) {
-			console.error("Vercel deploy hook failed", response.status);
+			console.error("Vercel deploy hook failed", response.status, responseBody);
 			return json({ error: "Vercel deploy hook failed" }, 502);
 		}
 		return json({ ok: true });

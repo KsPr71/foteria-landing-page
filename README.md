@@ -110,7 +110,7 @@ Para activarlo en producción:
 
 1. En Vercel, abre **Project Settings → Git → Deploy Hooks** y crea un hook para la rama `main`.
 2. En Supabase, abre **Edge Functions → Secrets** y crea estos secretos:
-   - `VERCEL_DEPLOY_HOOK_URL`: la URL completa del Deploy Hook de Vercel.
+   - `FOTERIA_VERCEL_DEPLOY_HOOK_URL`: la URL completa del Deploy Hook de **este** proyecto de Vercel. (Como compatibilidad, también se acepta `VERCEL_DEPLOY_HOOK_URL`.)
    - `VERCEL_DEPLOY_ADMIN_EMAIL`: el correo de la cuenta de Supabase autorizada a gestionar portfolios.
 3. Despliega la función desde el directorio del proyecto:
 

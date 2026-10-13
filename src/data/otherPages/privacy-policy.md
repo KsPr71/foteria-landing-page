@@ -1,49 +1,68 @@
 ---
-title: Privacy Policy
-description: Example privacy policy for Blogsmith! The best starter blog template for Astro.
+title: Política de privacidad
+description: Información sobre el tratamiento de datos personales en el sitio web de La Fotería.
 ---
 
-_Last updated on Sep 9, 2023_
+_Última actualización: 13 de octubre de 2026_
 
-This privacy policy sets out how Example LLC collects, processes, and uses your Personal Information through your use of our Services.
+En **La Fotería Estudio** respetamos la privacidad de las personas que visitan nuestro sitio web y solicitan una reserva. Esta política explica qué información podemos recibir, para qué la utilizamos y cómo puedes contactarnos sobre tus datos.
 
-**This is purely for example. Please consult a lawyer for your own privacy policy.**
+## Información que recopilamos
 
-## Personal Information Collection
+Cuando completas el formulario de reserva, puedes proporcionar:
 
-We only collect and use Personal Information to the extent necessary to provide you with the Services. We collect Personal Information for the Website to provide you with a better online experience.
+- Nombre.
+- Número de teléfono.
+- Fecha deseada para el servicio.
+- Mensaje o información adicional que decidas escribir.
 
-## Personal Information Retention
+El formulario abre una conversación de WhatsApp con La Fotería para que puedas enviar tu solicitud. El mensaje solo se envía cuando lo confirmas dentro de WhatsApp.
 
-We keep Personal Information for the shortest time necessary to provide you with Services and to meet all our legal and compliance obligations. To determine this retention period, we take into account (i) the nature of the Personal Information gathered; and (ii) the nature of our legal and compliance obligations. All Personal Information no longer required by us is destroyed and/or erased.
+También pueden generarse datos técnicos básicos al navegar, como dirección IP, tipo de navegador, dispositivo, fecha y páginas visitadas. Estos datos pueden ser tratados por los proveedores necesarios para alojar y proteger el sitio.
 
-## Personal Data from Third Parties
+## Finalidad del uso de la información
 
-We may, from time to time, obtain Personal Information from third parties to enable us to better tailor our Services to you (Third Party Personal Information). When we obtain Third Party Personal Information, we will notify you within one month. If we use or share Third Party Personal Information, we will notify you immediately.
+Utilizamos la información proporcionada para:
 
-## Your Rights
+- Responder consultas y solicitudes de reserva.
+- Comprobar la disponibilidad de fechas y preparar una cotización o propuesta de servicio.
+- Comunicarnos contigo respecto de los servicios solicitados.
+- Mantener la seguridad, funcionamiento y mejora del sitio web.
 
-With respect to Personal Information we hold, you have the following rights:
+No vendemos ni alquilamos tus datos personales.
 
-- Access: You may request from us access to your data that we hold on you.
-- Rectification: If the data we hold on you is inaccurate, you may request that we correct it. If the data we hold is incomplete, you may request that we complete it.
-- Erasure: Subject to certain conditions, you may request that we erase all of the data we hold on you.
-- Restrictions: Subject to certain conditions, you may request that we restrict the processing of data we hold on you.
-- Portability: Subject to certain conditions, you may request that we transfer all the data we hold on you to a third party (including yourself).
-- Objection: Subject to certain conditions, you may object to our processing of your data.
+## Conservación de los datos
 
-## Minors
+Conservamos la información solo durante el tiempo razonablemente necesario para atender tu solicitud, prestar el servicio contratado, mantener los registros necesarios y cumplir obligaciones aplicables. Después de ese período, la eliminaremos o anonimizaremos cuando corresponda.
 
-We do not knowingly collect information on children under the age of 16 (“Child”). If you become aware that a Child has provided us with Personal Information, please contact us. If we become aware that we have collected Personal Information from a Child without their parent's verifiable authorization to access our Services, we will take steps to remove that information from our servers.
+## Proveedores y servicios de terceros
 
-## Third Party Links
+El sitio utiliza servicios de terceros para su funcionamiento. Según la interacción que realices, estos proveedores pueden tratar datos de acuerdo con sus propias políticas de privacidad:
 
-Our website contains links to other third-party websites not owned or managed by Example LLC. This privacy policy applies to this website only. If you click a link to a third-party website, the privacy policy of that website will apply. We highly recommend that you read the privacy policies of other websites as they may be different from ours.
+- **WhatsApp**, para el envío voluntario de mensajes de reserva.
+- **Supabase**, para la administración técnica de contenido y archivos del sitio.
+- **Vercel**, para el alojamiento y publicación del sitio web.
 
-## Merger, acquisition, or asset sale
+No controlamos las políticas ni prácticas de sitios o aplicaciones de terceros. Te recomendamos revisarlas antes de compartir información con ellos.
 
-If Example LLC is involved in a merger, acquisition, or asset sale, your Personal Information may be transferred.
+## Fotografías y galerías
 
-## Contact us
+Las imágenes publicadas en las galerías muestran trabajos realizados por La Fotería. Si apareces en una fotografía y consideras que su publicación afecta tus derechos o deseas realizar una consulta sobre ella, contáctanos mediante los canales indicados al final de esta página.
 
-If you have any questions or suggestions about our privacy policy or want to know more information about Personal Information we hold, please contact us at support@example.com.
+## Tus derechos y solicitudes
+
+Puedes solicitar información sobre los datos personales que nos hayas facilitado, pedir su corrección, actualización o eliminación, u oponerte a determinados usos cuando resulte aplicable. Atenderemos cada solicitud de acuerdo con la normativa aplicable y podremos pedirte información razonable para verificar tu identidad.
+
+## Menores de edad
+
+No solicitamos deliberadamente datos personales de menores de edad sin la intervención de su madre, padre, tutor o representante legal. Si consideras que un menor nos ha proporcionado información sin autorización, comunícate con nosotros para revisarlo.
+
+## Cambios en esta política
+
+Podemos actualizar esta política cuando cambien nuestros servicios, el sitio o las prácticas de tratamiento de información. La fecha de actualización mostrada al inicio indicará la versión vigente.
+
+## Contacto
+
+Para consultas sobre esta política o sobre tus datos personales, puedes escribir a [novadev2026@gmail.com](mailto:novadev2026@gmail.com) o comunicarte por WhatsApp al **+53 53710376**.
+
+Esta política ofrece información general sobre el uso de datos en este sitio y no sustituye asesoramiento jurídico profesional.

@@ -19,8 +19,8 @@ const { title, description, heroImage, coverImage, coverPosition, slug } = isSto
 ---
 
 <div class:list={["grid gap-4", { "md:grid-cols-2": direction === "horizontal" }]}>
-	<a href={`/portfolio/${slug}`} class="aspect-square overflow-hidden">
-		{isStoragePortfolio ? <img src={coverImage} alt={title} style={`object-position: ${coverPosition};`} class="h-auto min-h-full w-full min-w-full object-cover" loading="lazy" /> : <Image src={heroImage} alt={title} width={450} densities={[1.5, 2, 3]} class="h-auto min-h-full w-full min-w-full object-cover" />}
+	<a href={`/portfolio/${slug}`} class:list={["aspect-square overflow-hidden", { "md:h-full md:aspect-auto": direction === "horizontal" }]}>
+		{isStoragePortfolio ? <img src={coverImage} alt={title} style={`object-position: ${coverPosition};`} class="h-full w-full object-cover" loading="lazy" /> : <Image src={heroImage} alt={title} width={450} densities={[1.5, 2, 3]} class="h-full w-full object-cover" />}
 	</a>
 	<div class="flex flex-col justify-between gap-2">
 		<div>
