@@ -1,6 +1,6 @@
 ---
-title: Kailyn
-testimonial: Siempre encantada con su trabajo, La Fotería es uno de los mejores estudios de Camagüey, siempre lo recomiendo por su excepcional trabajo
-image: ./DSC_0167.webp
-order: 3
+title: Dayesi
+testimonial: Tengo los recuerdos mas bellos de mi embarazo gracias a La Fotería. No dejes de hacer los tuyos.
+image: ./006.webp
+order: 6
 ---

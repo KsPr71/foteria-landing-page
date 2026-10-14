@@ -1,6 +1,6 @@
 ---
-title: Kailyn
-testimonial: Siempre encantada con su trabajo, La Fotería es uno de los mejores estudios de Camagüey, siempre lo recomiendo por su excepcional trabajo
-image: ./DSC_0167.webp
-order: 3
+title: Yosselyn Esteffany
+testimonial: Me ha gustado muchisimo el trabajo de La Fotería, lo recomiendo a todos los que deseen fotografías emotivas que capten la esencia de los más pequeños
+image: ./005.webp
+order: 5
 ---

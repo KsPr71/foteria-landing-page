@@ -57,7 +57,7 @@ const sitioConfig = {
 	"pricing-carousel-next-label": "Ver más planes",
 	"pricing-filter-all-label": "Todas las ofertas",
 	"pricing-items": pricingData,
-	"about-heading": "Conoce tus fotógrafos",
+	"about-heading": "Conoce el equipo de La Fotería",
 	
 	"contact-title": "Contacta para tu reserva",
 	"contact-description": "Escríbenos para tu reserva y te responderemos lo más pronto posible, Tambien puedes solicitar más información sobre nuestros servicios. La fecha que envíes se analizará en nuestra agenda y te responderemos si hay disponiblidad",
