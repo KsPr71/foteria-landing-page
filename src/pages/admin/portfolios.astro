@@ -258,10 +258,13 @@ import BaseLayout from "@layouts/BaseLayout.astro";
 		}
 		const imageLayoutValue = String(form.get("imageLayout"));
 		const layout = imageLayoutValue.split(":").map(Number).filter((count) => Number.isInteger(count) && count > 0);
-		const imageGroups: string[][] = files.length ? [] : (editingPortfolio?.images ?? []).map((group) => group.map((path) => path.replace(/^\.\//, "")));
-		for (let cursor = 0, layoutIndex = 0; cursor < paths.length; layoutIndex += 1) {
+		const imagePaths = files.length
+			? paths
+			: (editingPortfolio?.images ?? []).flat().map((path) => path.replace(/^\.\//, ""));
+		const imageGroups: string[][] = [];
+		for (let cursor = 0, layoutIndex = 0; cursor < imagePaths.length; layoutIndex += 1) {
 			const count = layout[layoutIndex % layout.length];
-			imageGroups.push(paths.slice(cursor, cursor + count));
+			imageGroups.push(imagePaths.slice(cursor, cursor + count));
 			cursor += count;
 		}
 		const title = String(form.get("title")).trim();
