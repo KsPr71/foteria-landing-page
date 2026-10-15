@@ -6,9 +6,16 @@ import { defineConfig } from "astro/config";
 import AutoImport from "astro-auto-import";
 import icon from "astro-icon"; // https://www.astroicon.dev/guides/upgrade/v1/
 
+const siteUrl =
+	process.env.PUBLIC_SITE_URL ||
+	process.env.URL ||
+	(process.env.VERCEL_PROJECT_PRODUCTION_URL
+		? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+		: "https://foteria-landing-page.vercel.app");
+
 // https://astro.build/config
 export default defineConfig({
-	site: "https://horizon.cosmicthemes.com",
+	site: siteUrl,
 	integrations: [
 		// example auto import component into blog post mdx files
 		AutoImport({

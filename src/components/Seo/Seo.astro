@@ -1,4 +1,5 @@
 ---
+import defaultSocialImage from "@assets/images/hero-bg-min.png";
 import siteData from "@config/siteData.json";
 import { getImage } from "astro:assets";
 import { SEO } from "astro-seo";
@@ -16,30 +17,20 @@ interface GenProps extends BaseProps {
 
 const { title = "general", description, image, noindex = false } = Astro.props as GenProps;
 
-let optimizedImage;
+const socialImage = image || defaultSocialImage;
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
 
-// if this is a blog page we do things differently
-if (image) {
-	optimizedImage = await getImage({
-		src: image,
-		format: "webp",
-		quality: "high",
-		width: 1200,
-	});
-}
-
-function trimEndSlash(str: string) {
-	if (str[str.length - 1] === "/") {
-		return str.slice(0, -1);
-	} else {
-		return str;
-	}
-}
-
-// put together the image URL
-const imageUrl =
-	trimEndSlash(Astro.site?.toString() || "") + (optimizedImage?.src || siteData.defaultImage.src);
+// Facebook recommends a large 1.91:1 image. Astro generates it at build time.
+const optimizedImage = await getImage({
+	src: socialImage,
+	format: "jpg",
+	quality: 90,
+	width: 1200,
+	height: 630,
+	fit: "cover",
+});
+const imageUrl = new URL(optimizedImage.src, Astro.site).toString();
+const imageAlt = title;
 ---
 
 <SEO
@@ -58,10 +49,10 @@ const imageUrl =
 			siteName: siteData.title,
 		},
 		image: {
-			type: "image/webp",
-			width: optimizedImage?.attributes.width || "1200",
-			height: optimizedImage?.attributes.height || "800",
-			alt: title,
+			type: "image/jpeg",
+			width: "1200",
+			height: "630",
+			alt: imageAlt,
 		},
 	}}
 	twitter={{
@@ -75,3 +66,6 @@ const imageUrl =
 	noindex={noindex}
 	nofollow={noindex}
 />
+
+<meta property="og:locale" content="es_ES" />
+<meta property="og:image:secure_url" content={imageUrl} />
