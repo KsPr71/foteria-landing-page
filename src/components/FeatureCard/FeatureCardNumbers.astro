@@ -12,12 +12,12 @@ interface Props {
 const { largeText, description, ...rest } = Astro.props as Props;
 ---
 
-<div {...rest} class="flex flex-col gap-3 text-center">
-	<h3 class="font-decorative text-primary-500 text-[8rem] leading-none">
+<div {...rest} class="flex flex-col gap-2 text-center sm:gap-3">
+	<h3 class="font-decorative text-primary-500 text-[4.5rem] leading-none sm:text-[5.5rem] lg:text-[6.5rem]">
 		{largeText}
 	</h3>
 
-	<p class="description font-heading-1 pr-2 text-2xl">
+	<p class="description font-heading-1 text-base sm:text-lg lg:text-xl">
 		{description}
 	</p>
 </div>
